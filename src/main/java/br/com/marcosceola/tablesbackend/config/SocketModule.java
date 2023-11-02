@@ -6,6 +6,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,7 +41,13 @@ public class SocketModule {
 
     private DataListener<Mensagem> onReceiveMessage() {
         return (client, message, ackSender) -> {
+            System.out.println("mensagem recebida " + message.getMensagem());
             socketService.sendMessage(message.getMesa(), "receber_mensagem", client, message.getMensagem());
         };
+    }
+
+    @PreDestroy
+    public void destroy() {
+        server.stop();
     }
 }
