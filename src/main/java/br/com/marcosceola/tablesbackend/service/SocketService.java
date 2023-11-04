@@ -9,7 +9,7 @@ public class SocketService {
 
     public void sendRoomMessage(String mesa, String eventName, SocketIOClient senderClient, String message) {
         for (var client : senderClient.getNamespace().getRoomOperations(mesa).getClients()) {
-            client.sendEvent(eventName, new Mensagem(senderClient.get("username"), message));
+            client.sendEvent(eventName, new Mensagem(senderClient.get("username"), message, mesa));
         }
     }
 }

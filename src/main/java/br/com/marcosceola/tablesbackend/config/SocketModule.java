@@ -7,9 +7,11 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 @Component
+@Log4j2
 public class SocketModule {
 
     private final SocketIOServer server;
@@ -27,21 +29,24 @@ public class SocketModule {
 
     private ConnectListener onConnect() {
         return client -> {
-            client.joinRoom(client.getHandshakeData().getSingleUrlParam("mesa"));
-            client.set("username", client.getHandshakeData().getSingleUrlParam("username"));
-            System.out.println(String.format("Socket ID [%s] connected to socket", client.getSessionId()));
+            var mesa = client.getHandshakeData().getSingleUrlParam("mesa");
+            var username = client.getHandshakeData().getSingleUrlParam("username");
+
+            log.info(String.format("Socket ID [%s] username[%s] connected to socket at room [%s]", client.getSessionId(), username, mesa));
+
+            client.joinRoom(mesa);
+            client.set("username", username);
         };
     }
 
     private DisconnectListener onDisconnect() {
         return client -> {
-            System.out.println(String.format("Socket ID [%s] disconnected from socket", client.getSessionId()));
+            log.info(String.format("Socket ID [%s] disconnected from socket", client.getSessionId()));
         };
     }
 
     private DataListener<Mensagem> onReceiveMessage() {
         return (client, message, ackSender) -> {
-            System.out.println("mensagem recebida " + message.getMensagem());
             socketService.sendRoomMessage(message.getMesa(), "receber_mensagem", client, message.getMensagem());
         };
     }
