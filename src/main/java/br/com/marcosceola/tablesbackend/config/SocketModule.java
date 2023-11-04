@@ -42,7 +42,7 @@ public class SocketModule {
     private DataListener<Mensagem> onReceiveMessage() {
         return (client, message, ackSender) -> {
             System.out.println("mensagem recebida " + message.getMensagem());
-            socketService.sendMessage(message.getMesa(), "receber_mensagem", client, message.getMensagem());
+            socketService.sendRoomMessage(message.getMesa(), "receber_mensagem", client, message.getMensagem());
         };
     }
 
